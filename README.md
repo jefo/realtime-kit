@@ -6,6 +6,8 @@
 Reusable real-time primitives, extracted from a production crypto terminal and
 rebuilt as standalone packages.
 
+![Realtime Kit terminal](docs/screenshot-terminal.png)
+
 | Package | Status | What it does |
 |---|---|---|
 | [`@rtkit/subscriptions`](packages/rt-subscriptions) | **0.1.0** | Multiplexed SSE subscriptions, bounded queues, lifecycle hooks, typed client |

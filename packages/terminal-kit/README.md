@@ -6,6 +6,8 @@
 **The UI layer of a trading terminal, without a charting library or a CSS
 framework.**
 
+![Terminal demo](https://raw.githubusercontent.com/jefo/realtime-kit/main/docs/screenshot-terminal.png)
+
 Six Svelte 5 components and a set of pure primitives for the screens that are
 expensive to get right: dense tables, an order book, sparklines, metrics and a
 connection state. Dark and light themes, compact and comfortable density, no
