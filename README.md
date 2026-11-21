@@ -49,6 +49,7 @@ bun run example:bridge   # http://localhost:8790, Binance WS -> SSE
 
 - [Architecture](docs/architecture.md) — package boundaries, deployment, scaling.
 - [Demo script](docs/demo-script.md) — six-minute walkthrough (RU).
+- [Launch post](docs/launch-post.md) — draft article (RU).
 - [Release](RELEASE.md) — GitHub, npm scope, publish checklist.
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)

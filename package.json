@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Reusable real-time primitives: multiplexed SSE subscriptions, UDF datafeeds, exchange ingest.",
+  "packageManager": "bun@1.3.5",
   "workspaces": ["packages/*"],
   "scripts": {
     "test": "bun test",
