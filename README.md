@@ -6,7 +6,7 @@ rebuilt as standalone packages.
 | Package | Status | What it does |
 |---|---|---|
 | [`@rtkit/subscriptions`](packages/rt-subscriptions) | **0.1.0** | Multiplexed SSE subscriptions, bounded queues, lifecycle hooks, typed client |
-| `udf-datafeed` | planned | UDF server + datafeed adapter for TradingView-compatible charts |
+| [`@rtkit/udf-datafeed`](packages/udf-datafeed) | **0.1.0** | UDF server, provider contract, memory and Binance adapters |
 | `market-ingest` | planned | Normalized exchange events (quotes, klines, funding, liquidations) |
 | `terminal-kit` | planned | Svelte components for data-heavy terminals |
 
@@ -34,6 +34,7 @@ bun run build
 
 bun run example:server   # http://localhost:8787
 bun run example:client
+bun run example:udf      # http://localhost:8585, candlestick demo
 ```
 
 ## Principles

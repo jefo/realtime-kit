@@ -1,0 +1,25 @@
+{
+  "name": "@rtkit/udf-datafeed",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "UDF server and provider adapters for TradingView-compatible charts.",
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm && tsc -p tsconfig.build.json"
+  },
+  "keywords": ["tradingview", "udf", "datafeed", "ohlcv", "binance", "charts"]
+}

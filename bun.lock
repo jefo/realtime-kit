@@ -13,9 +13,15 @@
       "name": "@rtkit/subscriptions",
       "version": "0.1.0",
     },
+    "packages/udf-datafeed": {
+      "name": "@rtkit/udf-datafeed",
+      "version": "0.1.0",
+    },
   },
   "packages": {
     "@rtkit/subscriptions": ["@rtkit/subscriptions@workspace:packages/rt-subscriptions"],
+
+    "@rtkit/udf-datafeed": ["@rtkit/udf-datafeed@workspace:packages/udf-datafeed"],
 
     "@types/bun": ["@types/bun@1.4.5", "", { "dependencies": { "bun-types": "1.4.5" } }, "sha512-DpgwNI9z0L1S0gtb45QLCWgwCUcMLnsHYMJHQvpNj7erGiCGBvpggltAIeARrtobNMKMuy0UP7i56tKKgwFs/Q=="],
 
