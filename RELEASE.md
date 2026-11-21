@@ -5,7 +5,7 @@ are missing.
 
 ## 0. What is already done
 
-- `bun test` — 107 tests.
+- `bun test` — 137 tests.
 - `bun run typecheck` — clean.
 - `bun run build` — ESM + `.d.ts` in each `dist/`.
 - `npm pack --dry-run` — `dist`, `README.md`, `LICENSE`, `package.json` only.
@@ -69,7 +69,7 @@ If 2FA is enabled, keep the one-time password ready or set `NPM_CONFIG_OTP`.
 ```
 
 This checks a clean tree, installs with the frozen lockfile, runs tests,
-typecheck and build, and verifies the tarball contents for all three packages.
+typecheck and build, and verifies the tarball contents for all four packages.
 Nothing is published.
 
 Inspect a tarball if needed:
@@ -90,6 +90,7 @@ Or manually, one package at a time:
 cd packages/rt-subscriptions && npm publish --access public
 cd ../udf-datafeed && npm publish --access public
 cd ../market-ingest && npm publish --access public
+cd ../terminal-kit && npm publish --access public
 ```
 
 There are no runtime dependencies between the packages, so order does not
@@ -118,10 +119,11 @@ Then create a GitHub release from the tag with the contents of `CHANGELOG.md`.
 npm view @rtkit/subscriptions version
 npm view @rtkit/udf-datafeed version
 npm view @rtkit/market-ingest version
+npm view @rtkit/terminal-kit version
 
 mkdir -p /tmp/rtkit-smoke && cd /tmp/rtkit-smoke
 bun init -y
-bun add @rtkit/subscriptions @rtkit/udf-datafeed @rtkit/market-ingest
+bun add @rtkit/subscriptions @rtkit/udf-datafeed @rtkit/market-ingest @rtkit/terminal-kit
 bun -e "import('@rtkit/subscriptions').then(m => console.log(Object.keys(m).length, 'exports'))"
 ```
 

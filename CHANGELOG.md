@@ -2,7 +2,7 @@
 
 ## 0.1.0 — 2026-11-21
 
-First public release of the three packages.
+First public release of the four packages.
 
 ### `@rtkit/subscriptions`
 
@@ -30,3 +30,13 @@ First public release of the three packages.
 - `MemoryEventCache` (TTL + eviction) and `RedisEventCache`.
 - `BinanceConnector` with dynamic subscribe/unsubscribe and reconnect.
 - End-to-end example: Binance WS → normalized events → SSE → browser.
+
+### `@rtkit/terminal-kit`
+
+- Svelte 5 components: `ThemeProvider`, `DataTable`, `OrderBook`, `Sparkline`,
+  `Metric`, `ConnectionBadge`.
+- Dark/light themes and compact/comfortable density via CSS tokens.
+- Sortable typed table with stable ordering, nulls last and keyboard activation.
+- Order-book math: sorting, depth ratios, spread, tick aggregation.
+- 30 tests for formatters, sorting and order-book calculations.
+- Runnable terminal dashboard built with Vite.

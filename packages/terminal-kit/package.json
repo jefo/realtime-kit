@@ -1,0 +1,52 @@
+{
+  "name": "@rtkit/terminal-kit",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Svelte 5 components and primitives for data-heavy trading terminals.",
+  "license": "MIT",
+  "author": "Evgenii Kaizin",
+  "homepage": "https://github.com/jefo/realtime-kit/tree/main/packages/terminal-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jefo/realtime-kit.git",
+    "directory": "packages/terminal-kit"
+  },
+  "bugs": {
+    "url": "https://github.com/jefo/realtime-kit/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "test": "bun test",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json",
+    "build": "svelte-package -i src/lib -o dist",
+    "prepack": "bun run build"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/package": "^2.5.8",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.59.1",
+    "svelte-check": "^4.7.8",
+    "typescript": "^5.9.3"
+  },
+  "keywords": ["svelte", "trading", "terminal", "orderbook", "datatable", "fintech"]
+}

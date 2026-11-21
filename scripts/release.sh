@@ -32,6 +32,7 @@ PACKAGES=(
   "packages/rt-subscriptions"
   "packages/udf-datafeed"
   "packages/market-ingest"
+  "packages/terminal-kit"
 )
 
 for dir in "${PACKAGES[@]}"; do

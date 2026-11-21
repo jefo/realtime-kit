@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Reusable real-time primitives: multiplexed SSE subscriptions, UDF datafeeds, exchange ingest.",
   "packageManager": "bun@1.3.5",
-  "workspaces": ["packages/*"],
+  "workspaces": ["packages/*", "examples/*"],
   "scripts": {
     "test": "bun test",
     "typecheck": "bun run --filter '*' typecheck",
@@ -14,7 +14,8 @@
     "example:client": "bun packages/rt-subscriptions/examples/ticker-client.ts",
     "example:udf": "bun packages/udf-datafeed/examples/memory-server.ts",
     "example:udf-binance": "bun packages/udf-datafeed/examples/binance-server.ts",
-    "example:bridge": "bun examples/bridge-server.ts"
+    "example:bridge": "bun examples/bridge-server.ts",
+    "example:terminal": "cd examples/terminal-demo && bunx vite --port 5190 --strictPort"
   },
   "devDependencies": {
     "@types/bun": "latest",

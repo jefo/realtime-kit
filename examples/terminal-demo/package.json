@@ -1,0 +1,16 @@
+{
+  "name": "terminal-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5190 --strictPort"
+  },
+  "dependencies": {
+    "@rtkit/terminal-kit": "workspace:*"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "svelte": "^5.59.1",
+    "vite": "^8.3.8"
+  }
+}

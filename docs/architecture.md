@@ -1,6 +1,6 @@
 # Architecture
 
-Three independent packages, one data path. Each can be used alone.
+Four independent packages, one data path. Each can be used alone.
 
 ```mermaid
 flowchart LR
@@ -28,9 +28,19 @@ flowchart LR
     P --> U
   end
 
+  subgraph UI["@rtkit/terminal-kit"]
+    T[DataTable]
+    B[OrderBook]
+    S[Sparkline]
+    M[Metric]
+  end
+
   WS --> C
   H -->|normalized events| G
-  Q -->|SSE| Browser[Browser / terminal]
+  Q -->|SSE| T
+  Q --> B
+  Q --> S
+  Q --> M
   U -->|OHLCV JSON| Chart[Chart]
 ```
 
@@ -71,6 +81,19 @@ Knows about the UDF protocol, not about sockets or sessions.
 
 **Failure modes:** provider timeout → 504 + `s:"error"`; empty data →
 `s:"no_data"`; unknown symbol → 404.
+
+### `@rtkit/terminal-kit`
+
+Knows about presentation, not about transports or exchanges.
+
+- Pure utilities own formatting, sorting and order-book math.
+- Svelte 5 components own the table, book, sparkline, metric and status.
+- Theme is a token contract (`--rtk-*`), not a CSS framework.
+- No charting library: `Sparkline` is SVG and the rest is up to the product.
+
+**Failure modes:** null values sort last; empty data renders an explicit state;
+flat series render a baseline; slow updates depend on the consumer's own
+backpressure.
 
 ## Deployment topologies
 
@@ -117,9 +140,11 @@ short cache for `history`, and keep the provider's rate limits in mind.
 ## Testing strategy
 
 - Protocol boundaries, not markup: canonical keys, UDF response shapes,
-  normalization, reconnect, overflow.
+  normalization, reconnect, overflow, sorting and order-book math.
 - Adapters are tested with fake sockets/fetch; live checks are examples, not
   the test suite.
+- Components are checked with `svelte-check` and packaged with
+  `svelte-package`; the demo is a production Vite build.
 - Deterministic providers (`MemoryProvider`, `MemoryEventCache`) make demos and
   CI independent of the network.
 
