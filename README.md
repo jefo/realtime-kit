@@ -1,5 +1,8 @@
 # Realtime Kit
 
+[![CI](https://github.com/jefo/realtime-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/jefo/realtime-kit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Reusable real-time primitives, extracted from a production crypto terminal and
 rebuilt as standalone packages.
 
