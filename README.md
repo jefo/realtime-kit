@@ -7,7 +7,7 @@ rebuilt as standalone packages.
 |---|---|---|
 | [`@rtkit/subscriptions`](packages/rt-subscriptions) | **0.1.0** | Multiplexed SSE subscriptions, bounded queues, lifecycle hooks, typed client |
 | [`@rtkit/udf-datafeed`](packages/udf-datafeed) | **0.1.0** | UDF server, provider contract, memory and Binance adapters |
-| `market-ingest` | planned | Normalized exchange events (quotes, klines, funding, liquidations) |
+| [`@rtkit/market-ingest`](packages/market-ingest) | **0.1.0** | Normalized events, exchange connectors, refcounted streams, memory/Redis cache |
 | `terminal-kit` | planned | Svelte components for data-heavy terminals |
 
 ## Why
@@ -35,6 +35,7 @@ bun run build
 bun run example:server   # http://localhost:8787
 bun run example:client
 bun run example:udf      # http://localhost:8585, candlestick demo
+bun run example:bridge   # http://localhost:8790, Binance WS -> SSE
 ```
 
 ## Principles

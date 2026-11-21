@@ -1,0 +1,25 @@
+{
+  "name": "@rtkit/market-ingest",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Normalized market events, exchange connectors, cache and fan-out for real-time terminals.",
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm && tsc -p tsconfig.build.json"
+  },
+  "keywords": ["market-data", "binance", "websocket", "crypto", "realtime", "ingest"]
+}

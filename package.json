@@ -12,10 +12,16 @@
     "example:server": "bun packages/rt-subscriptions/examples/ticker-server.ts",
     "example:client": "bun packages/rt-subscriptions/examples/ticker-client.ts",
     "example:udf": "bun packages/udf-datafeed/examples/memory-server.ts",
-    "example:udf-binance": "bun packages/udf-datafeed/examples/binance-server.ts"
+    "example:udf-binance": "bun packages/udf-datafeed/examples/binance-server.ts",
+    "example:bridge": "bun examples/bridge-server.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@rtkit/market-ingest": "workspace:*",
+    "@rtkit/subscriptions": "workspace:*",
+    "@rtkit/udf-datafeed": "workspace:*"
   }
 }

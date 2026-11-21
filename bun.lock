@@ -4,10 +4,19 @@
   "workspaces": {
     "": {
       "name": "realtime-kit",
+      "dependencies": {
+        "@rtkit/market-ingest": "workspace:*",
+        "@rtkit/subscriptions": "workspace:*",
+        "@rtkit/udf-datafeed": "workspace:*",
+      },
       "devDependencies": {
         "@types/bun": "latest",
         "typescript": "^5.9.3",
       },
+    },
+    "packages/market-ingest": {
+      "name": "@rtkit/market-ingest",
+      "version": "0.1.0",
     },
     "packages/rt-subscriptions": {
       "name": "@rtkit/subscriptions",
@@ -19,6 +28,8 @@
     },
   },
   "packages": {
+    "@rtkit/market-ingest": ["@rtkit/market-ingest@workspace:packages/market-ingest"],
+
     "@rtkit/subscriptions": ["@rtkit/subscriptions@workspace:packages/rt-subscriptions"],
 
     "@rtkit/udf-datafeed": ["@rtkit/udf-datafeed@workspace:packages/udf-datafeed"],
