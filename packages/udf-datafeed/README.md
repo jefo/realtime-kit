@@ -1,5 +1,8 @@
 # @rtkit/udf-datafeed
 
+> Part of [Realtime Kit](https://github.com/jefo/realtime-kit) — small, tested
+> building blocks for real-time market terminals.
+
 **Bring your own data. Keep the chart.**
 
 UDF (Universal Data Feed) is the HTTP protocol behind TradingView-compatible

@@ -1,5 +1,8 @@
 # @rtkit/subscriptions
 
+> Part of [Realtime Kit](https://github.com/jefo/realtime-kit) — small, tested
+> building blocks for real-time market terminals.
+
 **One EventSource per tab, not per widget.**
 
 A dashboard with ten live widgets usually opens ten streams, duplicates
@@ -20,8 +23,9 @@ runtime with Web `Request`/`Response` and `ReadableStream`.
 bun add @rtkit/subscriptions
 ```
 
-> Not published to npm yet. Inside this repo the package is available through
-> the workspace; for external projects use `bun link` or install from git.
+> The package lives in the [Realtime Kit](https://github.com/jefo/realtime-kit)
+> monorepo. If it is not on npm yet, link the workspace package with
+> `bun link` from `packages/rt-subscriptions`.
 
 ## Quick start
 

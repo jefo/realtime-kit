@@ -1,5 +1,8 @@
 # @rtkit/market-ingest
 
+> Part of [Realtime Kit](https://github.com/jefo/realtime-kit) — small, tested
+> building blocks for real-time market terminals.
+
 **One event shape for every exchange.**
 
 Every exchange ships its own WebSocket payloads, its own symbol names and its

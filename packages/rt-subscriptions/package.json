@@ -4,6 +4,22 @@
   "type": "module",
   "description": "Multiplexed SSE subscriptions with bounded queues, lifecycle hooks and a typed client.",
   "license": "MIT",
+  "author": "Evgenii Kaizin",
+  "homepage": "https://github.com/jefo/realtime-kit/tree/main/packages/rt-subscriptions#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jefo/realtime-kit.git",
+    "directory": "packages/rt-subscriptions"
+  },
+  "bugs": {
+    "url": "https://github.com/jefo/realtime-kit/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -15,11 +31,12 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "src", "README.md", "LICENSE"],
   "scripts": {
     "test": "bun test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "build": "bun build src/index.ts --outdir dist --target node --format esm && tsc -p tsconfig.build.json"
+    "build": "bun build src/index.ts --outdir dist --target node --format esm && tsc -p tsconfig.build.json",
+    "prepack": "bun run build"
   },
   "keywords": ["sse", "server-sent-events", "subscriptions", "realtime", "bun", "typescript"]
 }
