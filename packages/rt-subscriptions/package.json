@@ -1,0 +1,25 @@
+{
+  "name": "@rtkit/subscriptions",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Multiplexed SSE subscriptions with bounded queues, lifecycle hooks and a typed client.",
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "bun": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "bun build src/index.ts --outdir dist --target node --format esm && tsc -p tsconfig.build.json"
+  },
+  "keywords": ["sse", "server-sent-events", "subscriptions", "realtime", "bun", "typescript"]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "realtime-kit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Reusable real-time primitives: multiplexed SSE subscriptions, UDF datafeeds, exchange ingest.",
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "bun run --filter '*' typecheck",
+    "build": "bun run --filter '*' build",
+    "example:server": "bun packages/rt-subscriptions/examples/ticker-server.ts",
+    "example:client": "bun packages/rt-subscriptions/examples/ticker-client.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.9.3"
+  }
+}
