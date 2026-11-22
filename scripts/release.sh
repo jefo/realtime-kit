@@ -22,6 +22,9 @@ bun install --frozen-lockfile
 echo "== test"
 bun test
 
+echo "== component tests"
+bun run test:ui
+
 echo "== typecheck"
 bun run typecheck
 

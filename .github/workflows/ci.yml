@@ -15,5 +15,8 @@ jobs:
           bun-version: latest
       - run: bun install --frozen-lockfile
       - run: bun test
+      - run: bun run test:ui
       - run: bun run typecheck
       - run: bun run build
+      - name: Build demo
+        run: cd examples/terminal-demo && bunx vite build
