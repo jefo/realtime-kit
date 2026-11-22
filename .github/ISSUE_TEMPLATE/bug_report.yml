@@ -1,0 +1,59 @@
+name: Bug report
+description: Something does not work as documented.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please include a minimal
+        reproduction — a failing test or a short script is ideal.
+  - type: input
+    id: package
+    attributes:
+      label: Package
+      description: Which package is affected?
+      placeholder: "@rtkit/subscriptions"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "0.1.0 or commit SHA"
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Actual behavior, error message, logs.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Steps, code, or a link to a minimal repository.
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime
+      placeholder: "Bun 1.3 / Node 22 / browser"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and discussions.
+          required: true
+        - label: I can reproduce this on the latest main branch.
+          required: false

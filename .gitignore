@@ -6,3 +6,9 @@ dist
 .env
 .env.*
 /SALES.md
+
+# internal docs kept outside the public repo
+/docs/demo-script.md
+/docs/launch-post.md
+
+.svelte-kit

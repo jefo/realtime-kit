@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an API, adapter, or integration.
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a new exchange connector or a protocol change, describe the
+        contract first. Small, focused proposals are easier to review.
+  - type: input
+    id: package
+    attributes:
+      label: Package
+      placeholder: "@rtkit/udf-datafeed"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to do that is hard or impossible today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: API sketch, protocol details, or a link to the exchange docs.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and discussions.
+          required: true
+        - label: This is not a request for a proprietary charting library.
+          required: false

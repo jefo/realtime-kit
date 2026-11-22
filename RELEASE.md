@@ -1,57 +1,51 @@
-# Release
+# Releasing
 
-Everything is built and tested. Only the credentials and the public repository
-are missing.
+The repository is public and CI is green. npm publishing is the remaining step;
+the package name and scope must be decided first.
 
-## 0. What is already done
+## 0. Current state
 
-- `bun test` — 137 tests.
-- `bun run typecheck` — clean.
-- `bun run build` — ESM + `.d.ts` in each `dist/`.
-- `npm pack --dry-run` — `dist`, `README.md`, `LICENSE`, `package.json` only.
+- `bun test` — 143 tests.
+- `bun run test:ui` — 14 component tests (Vitest + Testing Library).
+- `bun run typecheck` — clean, including `svelte-check`.
+- `bun run build` — ESM, `.d.ts`, and Svelte components in each `dist/`.
+- `node scripts/consumer-smoke.mjs` — packs all four packages, installs them
+  with npm into a clean project, runs a Node smoke and a Vite build.
 - CI: `.github/workflows/ci.yml`.
-- Publish workflow: `.github/workflows/publish.yml`.
+- Node consumer: `.github/workflows/consumer.yml`.
+- Pages demo: `.github/workflows/pages.yml`.
 
-## 1. Create the GitHub repository
+## 1. Choose the name and scope
 
-The SSH key on this machine already authenticates as `jefo`.
+The current package names are `@rtkit/*`. Before publishing, confirm that the
+account owns the npm scope. `rtkit` also names an unrelated Linux project, and
+`terminal-kit` is an existing npm package, so a rename is likely.
 
-Create an empty public repository `jefo/realtime-kit` at
-<https://github.com/new?name=realtime-kit&visibility=public> (no README, no
-license — they already exist), then:
+If the scope is not owned:
 
-```bash
-cd Products/realtime-kit
-git remote add origin git@github.com:jefo/realtime-kit.git
-git branch -M main
-git push -u origin main
-```
+- choose a unique project name and npm scope;
+- rename the packages, imports, README badges and repository links;
+- update the Pages base in `examples/terminal-demo/vite.config.ts` if the
+  repository name changes;
+- run the full release dry run again.
 
-Check that CI is green.
+Do not publish under a scope you do not control: npm returns `403 Forbidden`.
 
-## 2. Decide the npm scope
+## 2. Repository settings
 
-The packages are named `@rtkit/*`. A scope must be owned by an npm user or org.
-
-**Option A — create the `rtkit` org (recommended).**
-Go to <https://www.npmjs.com/org/create>, create a free public org named `rtkit`,
-then publish from your account. No code changes.
-
-**Option B — use the `@jefo` scope.**
-If your npm username is `jefo`, the scope already exists. Rename the packages
-before publishing:
+Repository description, topics, homepage and Discussions are configured in
+GitHub settings. If `gh` is available:
 
 ```bash
-# package names
-perl -pi -e 's/@rtkit\//@jefo\//g' packages/*/package.json package.json \
-  packages/*/README.md README.md examples/*.ts packages/*/src/**/*.ts 2>/dev/null || true
-
-# re-link the workspace
-bun install
-bun test
+gh repo edit jefo/realtime-kit \
+  --description "Real-time market data primitives: ingest, SSE sessions, UDF datafeed, Svelte UI" \
+  --homepage "https://jefo.github.io/realtime-kit/" \
+  --add-topic typescript --add-topic bun --add-topic sse \
+  --add-topic tradingview --add-topic market-data --add-topic svelte
 ```
 
-Do not publish under a scope you do not own: npm returns `403 Forbidden`.
+Otherwise set them manually. Enable **Discussions** if you want a place for API
+questions; enable **Pages → GitHub Actions** for the demo.
 
 ## 3. Log in to npm
 
@@ -60,7 +54,7 @@ npm login
 npm whoami
 ```
 
-If 2FA is enabled, keep the one-time password ready or set `NPM_CONFIG_OTP`.
+If 2FA is enabled, keep a one-time password ready or set `NPM_CONFIG_OTP`.
 
 ## 4. Dry run
 
@@ -72,10 +66,10 @@ This checks a clean tree, installs with the frozen lockfile, runs tests,
 typecheck and build, and verifies the tarball contents for all four packages.
 Nothing is published.
 
-Inspect a tarball if needed:
+Run the consumer smoke as well:
 
 ```bash
-cd packages/rt-subscriptions && npm pack --dry-run
+node scripts/consumer-smoke.mjs
 ```
 
 ## 5. Publish
@@ -84,7 +78,7 @@ cd packages/rt-subscriptions && npm pack --dry-run
 ./scripts/release.sh --publish
 ```
 
-Or manually, one package at a time:
+Or manually:
 
 ```bash
 cd packages/rt-subscriptions && npm publish --access public
@@ -103,15 +97,9 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-The `publish` workflow also runs on `v*` tags when `NPM_TOKEN` is configured.
-For manual publishing, add the secret in **Settings → Secrets and variables →
-Actions**:
-
-```
-NPM_TOKEN = <automation token from npmjs.com>
-```
-
-Then create a GitHub release from the tag with the contents of `CHANGELOG.md`.
+The publish workflow also runs on `v*` tags when `NPM_TOKEN` is configured in
+**Settings → Secrets and variables → Actions**. For manual publishing, create
+the GitHub release from the tag and copy the relevant `CHANGELOG.md` entries.
 
 ## 7. Verify
 
@@ -127,15 +115,22 @@ bun add @rtkit/subscriptions @rtkit/udf-datafeed @rtkit/market-ingest @rtkit/ter
 bun -e "import('@rtkit/subscriptions').then(m => console.log(Object.keys(m).length, 'exports'))"
 ```
 
-## 8. Unpublish policy
+## 8. Demo
 
-npm allows unpublishing within 72 hours if no other package depends on the
-version. After that, publish a patch instead. Never reuse a version number.
+The Pages workflow builds `examples/terminal-demo` and deploys it to
+`https://jefo.github.io/realtime-kit/`. If the deployment fails, check that
+Pages is set to **GitHub Actions** and that the base path in
+`examples/terminal-demo/vite.config.ts` matches the repository name.
 
 ## 9. Post-release
 
-- [ ] Add the npm links to the README of `jefo/portfolio`.
-- [ ] Add the repository topics: `typescript`, `bun`, `sse`, `tradingview`, `market-data`.
-- [ ] Publish the launch post from `SALES.md`.
+- [ ] Add npm links to the repository README and `jefo/portfolio`.
 - [ ] Pin the repository on the GitHub profile.
-- [ ] Replace the "not on npm yet" note in package READMEs if any remain.
+- [ ] Publish the launch post (stored outside this repository).
+- [ ] Open a discussion for API feedback.
+- [ ] Watch the first issues and resist adding scope before 0.2.
+
+## 10. Unpublish policy
+
+npm allows unpublishing within 72 hours if no other package depends on the
+version. After that, publish a patch instead. Never reuse a version number.
