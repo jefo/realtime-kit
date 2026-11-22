@@ -119,8 +119,9 @@ bun -e "import('@rtkit/subscriptions').then(m => console.log(Object.keys(m).leng
 ## 8. Demo
 
 The Pages workflow builds `examples/terminal-demo` and deploys it to
-`https://jefo.github.io/realtime-kit/`. If the deployment fails, check that
-Pages is set to **GitHub Actions** and that the base path in
+`https://jefo.github.io/realtime-kit/`. Enable **Settings → Pages → Source:
+GitHub Actions** first, then run the `pages` workflow from the Actions tab. If
+the deployment fails, check that the base path in
 `examples/terminal-demo/vite.config.ts` matches the repository name.
 
 ## 9. Post-release

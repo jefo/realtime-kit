@@ -1,8 +1,8 @@
 name: pages
 
 on:
-  push:
-    branches: [main]
+  # Pages must be enabled in Settings -> Pages -> Source: GitHub Actions first.
+  # Run this workflow manually after enabling it.
   workflow_dispatch:
 
 permissions:
