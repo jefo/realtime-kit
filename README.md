@@ -56,9 +56,9 @@ bun run example:bridge    # Binance WS -> normalized events -> SSE, localhost:87
 bun run example:terminal  # Svelte terminal dashboard, localhost:5190
 ```
 
-The terminal demo uses mock data and has no backend. A hosted version:
-<https://jefo.github.io/realtime-kit/> (deployed by the Pages workflow after the
-first push to `main`).
+The terminal demo uses mock data and has no backend. A Pages workflow builds and
+deploys it; enable **Settings → Pages → GitHub Actions** in the repository to
+publish it.
 
 ## Prior art
 

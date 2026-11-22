@@ -44,8 +44,9 @@ gh repo edit jefo/realtime-kit \
   --add-topic tradingview --add-topic market-data --add-topic svelte
 ```
 
-Otherwise set them manually. Enable **Discussions** if you want a place for API
-questions; enable **Pages → GitHub Actions** for the demo.
+Otherwise set them manually. Enable **Settings → Pages → Source: GitHub Actions**
+for the demo (the workflow cannot enable Pages with the default token). Enable
+**Discussions** if you want a place for API questions.
 
 ## 3. Log in to npm
 
