@@ -210,6 +210,16 @@ describe("HTTP surface", () => {
     expect(response.headers.get("access-control-allow-origin")).toBe("*");
   });
 
+  test("does not enable CORS by default", async () => {
+    const temporary = Bun.serve({
+      port: 0,
+      fetch: createUdfHandler(new MemoryProvider()),
+    });
+    const response = await fetch(`http://127.0.0.1:${temporary.port}/config`);
+    expect(response.headers.get("access-control-allow-origin")).toBeNull();
+    await temporary.stop(true);
+  });
+
   test("reports health", async () => {
     const { status, body } = await getJson<{ ok: boolean; provider: string }>("/health");
     expect(status).toBe(200);

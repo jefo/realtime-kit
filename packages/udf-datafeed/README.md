@@ -21,6 +21,19 @@ This package is the server and the adapter seam. You implement one
 - Search in both shapes: bare array (classic UDF) or `{ symbols }`.
 - No charting library bundled, no vendor code.
 
+## Install
+
+Not on npm yet; the package name and scope will be finalized before the first
+publish.
+
+```bash
+git clone https://github.com/jefo/realtime-kit
+cd realtime-kit
+bun install
+```
+
+For a local consumer, run `bun link` from `packages/udf-datafeed`.
+
 ## Quick start
 
 ```ts
@@ -144,9 +157,9 @@ Production notes:
 | Option | Default | Meaning |
 |---|---|---|
 | `basePath` | none | Mount prefix, e.g. `/udf` |
-| `cors` | `*` | `true`, an origin string, or `false` |
+| `cors` | disabled | `true` means `*`; a string is used as the origin |
 | `timeoutMs` | `15000` | Per-request provider timeout |
-| `maxBars` | `50000` | Hard cap per history response |
+| `maxBars` | `50000` | Hard cap per history response (must be >= 1) |
 | `searchShape` | `"array"` | `"array"` or `"object"` |
 | `now` | `Date.now` | Clock for `/time` and default `to` |
 | `onError` | `console.error` | Internal error sink |

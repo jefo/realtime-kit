@@ -5,6 +5,8 @@ import type { Bar, HistoryOkResponse } from "../protocol/types";
  * to return messy data; the server cleans it once.
  */
 export function normalizeBars(input: Bar[], maxBars = 50_000): Bar[] {
+  const limit =
+    Number.isFinite(maxBars) && maxBars >= 1 ? Math.floor(maxBars) : 50_000;
   const byTime = new Map<number, Bar>();
 
   for (const bar of input) {
@@ -28,7 +30,7 @@ export function normalizeBars(input: Bar[], maxBars = 50_000): Bar[] {
   }
 
   const sorted = [...byTime.values()].sort((a, b) => a.time - b.time);
-  return sorted.length > maxBars ? sorted.slice(-maxBars) : sorted;
+  return sorted.length > limit ? sorted.slice(-limit) : sorted;
 }
 
 export function toHistoryResponse(bars: Bar[], nextTime?: number): HistoryOkResponse {

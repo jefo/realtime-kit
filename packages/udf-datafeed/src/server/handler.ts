@@ -37,6 +37,13 @@ export function createUdfHandler(
   const headers = corsHeaders(options.cors);
   const timeoutMs = options.timeoutMs ?? 15_000;
   const maxBars = options.maxBars ?? 50_000;
+
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 0) {
+    throw new Error("timeoutMs must be a finite number >= 0.");
+  }
+  if (!Number.isFinite(maxBars) || maxBars < 1) {
+    throw new Error("maxBars must be a finite number >= 1.");
+  }
   const searchShape = options.searchShape ?? "array";
   const now = options.now ?? Date.now;
   const logError =
@@ -289,8 +296,8 @@ function normalizeBase(basePath: string | undefined): string {
 }
 
 function corsHeaders(origin: boolean | string | undefined): Record<string, string> {
-  if (origin === false) return {};
-  const value = origin === undefined || origin === true ? "*" : origin;
+  if (origin === false || origin === undefined) return {};
+  const value = origin === true ? "*" : origin;
   return {
     "access-control-allow-origin": value,
     "access-control-allow-methods": "GET, OPTIONS",
