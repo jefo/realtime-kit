@@ -40,6 +40,8 @@ export interface BinanceConnectorOptions {
   market?: "spot" | "futures";
   wsUrl?: string;
   webSocketFactory?: WebSocketFactory;
+  /** Reject a socket that does not open in time. Default: 10000 ms. */
+  connectTimeoutMs?: number;
   reconnect?: ReconnectOptions;
   now?: () => number;
   onError?: (error: unknown, context: string) => void;
@@ -71,6 +73,7 @@ export class BinanceConnector implements ExchangeConnector {
   private readonly factory: WebSocketFactory;
   private readonly reconnectOptions: Required<ReconnectOptions>;
   private readonly clock: () => number;
+  private readonly connectTimeoutMs: number;
   private readonly onError: (error: unknown, context: string) => void;
 
   private readonly streams = new Set<string>();
@@ -82,6 +85,7 @@ export class BinanceConnector implements ExchangeConnector {
   private attempt = 0;
   private nextId = 1;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private connectTimer: ReturnType<typeof setTimeout> | null = null;
   private lastError: Error | null = null;
   private pendingReject: ((error: Error) => void) | null = null;
   private pendingResolve: (() => void) | null = null;
@@ -91,7 +95,16 @@ export class BinanceConnector implements ExchangeConnector {
     this.wsUrl = options.wsUrl ?? (this.market === "futures" ? FUTURES_WS : SPOT_WS);
     this.factory =
       options.webSocketFactory ??
-      ((url) => new WebSocket(url) as unknown as WebSocketLike);
+      ((url) => {
+        if (typeof WebSocket === "undefined") {
+          throw new MarketError(
+            "unsupported_runtime",
+            "No global WebSocket. Pass `webSocketFactory` (for example the `ws` package) or use Node 22+.",
+          );
+        }
+        return new WebSocket(url) as unknown as WebSocketLike;
+      });
+    this.connectTimeoutMs = Math.max(1, options.connectTimeoutMs ?? 10_000);
     this.reconnectOptions = { ...DEFAULTS, ...(options.reconnect ?? {}) };
     this.clock = options.now ?? Date.now;
     this.onError =
@@ -111,6 +124,7 @@ export class BinanceConnector implements ExchangeConnector {
   async disconnect(): Promise<void> {
     this.stopped = true;
     this.clearReconnect();
+    this.clearConnectTimer();
     this.pendingReject?.(new MarketError("connector_closed", "Connector disconnected."));
     this.pendingReject = null;
     this.pendingResolve = null;
@@ -161,7 +175,26 @@ export class BinanceConnector implements ExchangeConnector {
       this.pendingResolve = resolve;
       this.pendingReject = reject;
 
+      this.connectTimer = setTimeout(() => {
+        if (this.pendingReject !== reject) return;
+        this.pendingReject = null;
+        this.pendingResolve = null;
+
+        const error = new MarketError(
+          "upstream_error",
+          `Binance WebSocket did not open within ${this.connectTimeoutMs} ms.`,
+        );
+        this.lastError = error;
+        try {
+          socket.close(4000, "connect timeout");
+        } catch {
+          // The socket may already be gone.
+        }
+        reject(error);
+      }, this.connectTimeoutMs);
+
       socket.addEventListener("open", () => {
+        this.clearConnectTimer();
         this.isOpen = true;
         this.openedOnce = true;
         this.attempt = 0;
@@ -189,6 +222,7 @@ export class BinanceConnector implements ExchangeConnector {
   }
 
   private handleClose(): void {
+    this.clearConnectTimer();
     this.isOpen = false;
     this.socket = null;
 
@@ -302,6 +336,13 @@ export class BinanceConnector implements ExchangeConnector {
     if (this.reconnectTimer !== null) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
+    }
+  }
+
+  private clearConnectTimer(): void {
+    if (this.connectTimer !== null) {
+      clearTimeout(this.connectTimer);
+      this.connectTimer = null;
     }
   }
 }

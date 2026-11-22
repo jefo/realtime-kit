@@ -108,6 +108,30 @@ describe("connection", () => {
       connector.subscribe([{ topic: "quote", symbol: "BTCUSDT" }]),
     ).rejects.toMatchObject({ code: "connector_closed" });
   });
+
+  test("times out a socket that never opens", async () => {
+    const sockets: FakeSocket[] = [];
+    const connector = new BinanceConnector({
+      webSocketFactory: (url) => {
+        const socket = new FakeSocket(url, false);
+        sockets.push(socket);
+        return socket;
+      },
+      connectTimeoutMs: 10,
+    });
+    connectors.push(connector);
+
+    const context: ConnectorContext = {
+      signal: new AbortController().signal,
+      emit: () => {},
+      setStatus: () => {},
+    };
+
+    await expect(connector.connect(context)).rejects.toMatchObject({
+      code: "upstream_error",
+    });
+    expect(sockets).toHaveLength(1);
+  });
 });
 
 describe("subscriptions", () => {

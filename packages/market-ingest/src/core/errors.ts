@@ -3,6 +3,7 @@ export type MarketErrorCode =
   | "invalid_subscription"
   | "not_connected"
   | "connector_closed"
+  | "unsupported_runtime"
   | "upstream_error";
 
 export class MarketError extends Error {
