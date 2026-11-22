@@ -16,6 +16,11 @@
     density?: "compact" | "comfortable";
     maxHeight?: string;
     stickyHeader?: boolean;
+    /** Controlled sort state. When omitted, the table sorts internally. */
+    sort?: SortState;
+    onSortChange?: (state: SortState) => void;
+    /** Render rows as-is; use with `onSortChange` for server-side sorting. */
+    manualSort?: boolean;
   }
 
   let {
@@ -30,10 +35,16 @@
     density = "compact",
     maxHeight = "100%",
     stickyHeader = true,
+    sort,
+    onSortChange,
+    manualSort = false,
   }: Props<Row> = $props();
 
-  let sort = $state<SortState>({ key: null, direction: "asc" });
-  const sortedRows = $derived(sortRows(rows, columns, sort));
+  let internalSort = $state<SortState>({ key: null, direction: "asc" });
+  const activeSort = $derived(sort ?? internalSort);
+  const sortedRows = $derived(
+    manualSort ? rows : sortRows(rows, columns, activeSort),
+  );
 
   function keyFor(row: Row, index: number): string | number {
     return rowKey ? rowKey(row, index) : index;
@@ -67,6 +78,12 @@
       onRowClick(row);
     }
   }
+
+  function toggleSort(column: Column<Row>): void {
+    const next = nextSortState(activeSort, column.key);
+    if (sort === undefined) internalSort = next;
+    onSortChange?.(next);
+  }
 </script>
 
 <div
@@ -86,23 +103,23 @@
             scope="col"
             style:width={column.width}
             style:text-align={column.align ?? "left"}
-            aria-sort={ariaSort(sort, column.key)}
+            aria-sort={ariaSort(activeSort, column.key)}
           >
             {#if column.sortable !== false}
               <button
                 type="button"
                 class="rtk-sort-button"
                 style:justify-content={alignStyle(column)}
-                onclick={() => (sort = nextSortState(sort, column.key))}
+                onclick={() => toggleSort(column)}
               >
                 <span>{column.header}</span>
                 <span
                   class="rtk-sort-mark"
-                  class:active={sort.key === column.key}
+                  class:active={activeSort.key === column.key}
                   aria-hidden="true"
                 >
-                  {sort.key === column.key
-                    ? sort.direction === "asc"
+                  {activeSort.key === column.key
+                    ? activeSort.direction === "asc"
                       ? "▲"
                       : "▼"
                     : "↕"}
@@ -139,6 +156,7 @@
             class:selected={selectedKey === key}
             class:clickable
             tabindex={clickable ? 0 : undefined}
+            aria-selected={selectedKey === null ? undefined : selectedKey === key}
             onclick={() => onRowClick?.(row)}
             onkeydown={(event) => onKeydown(event, row)}
           >
@@ -251,6 +269,12 @@
 
   .rtk-sort-button:hover {
     color: var(--rtk-text, #e6e9ee);
+  }
+
+  .rtk-sort-button:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid var(--rtk-accent, #d4af37);
+    outline-offset: 2px;
   }
 
   .rtk-sort-mark {

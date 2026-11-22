@@ -10,23 +10,30 @@ framework.**
 
 Six Svelte 5 components and a set of pure primitives for the screens that are
 expensive to get right: dense tables, an order book, sparklines, metrics and a
-connection state. Dark and light themes, compact and comfortable density, no
-runtime dependencies.
+connection state. Dark and light themes, compact and comfortable density. Svelte
+is a peer dependency; there are no other runtime dependencies.
 
 - **No CSS framework.** Plain CSS with tokens you can override.
 - **No charting library.** `Sparkline` is SVG; bring your own candlestick chart.
-- **SSR-safe.** No `window` at module scope; every component renders on the
-  server.
-- **Accessible by default.** Semantic tables, `aria-sort`, keyboard row
-  activation, `prefers-reduced-motion`.
+- **SSR-friendly.** No `window` at module scope. SSR rendering is not yet covered
+  by tests.
+- **Semantic markup.** Native table for the order book, `aria-sort`, keyboard row
+  activation. Accessibility is being hardened; see the root limitations.
 - **Typed.** Svelte 5 runes and exported TypeScript types.
 
 ## Install
 
+Not on npm yet; the package name and scope will be finalized before the first
+publish.
+
 ```bash
-bun add @rtkit/terminal-kit
-# svelte@5 is a peer dependency
+git clone https://github.com/jefo/realtime-kit
+cd realtime-kit
+bun install
 ```
+
+`@rtkit/terminal-kit` requires `svelte@5` as a peer dependency. For a local
+consumer, run `bun link` from `packages/terminal-kit`.
 
 ## Quick start
 
@@ -82,6 +89,8 @@ bun add @rtkit/terminal-kit
   when text formatting is not enough.
 - `rowKey` is strongly recommended: it keeps selection and keyed rows stable
   when the order changes.
+- For server-side sorting, pass `sort` + `onSortChange` and set `manualSort` so
+  the component does not re-sort the rows it receives.
 
 ### OrderBook
 
@@ -149,10 +158,19 @@ table, theme toggle. No exchange keys, no network.
 ## Tests
 
 ```bash
-bun test          # 30 tests: formatters, sorting, order book math
+bun test          # 30 unit tests: formatters, sorting, order book math
+bun run test:ui   # 14 component tests (Vitest + Testing Library + jsdom)
 bun run check     # svelte-check: components and types
 bun run build     # svelte-package: dist + .d.ts
 ```
+
+## Limitations
+
+- `DataTable` does not virtualize; use `manualSort` and pagination for large
+  datasets.
+- No candlestick chart; `Sparkline` is intentionally minimal.
+- SSR is not covered by tests yet.
+- Accessibility is semantic but still being audited (ARIA, contrast, focus).
 
 ## Roadmap
 

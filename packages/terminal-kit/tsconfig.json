@@ -8,5 +8,5 @@
     "moduleResolution": "bundler",
     "types": ["bun"]
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.svelte", "tests/**/*.ts", "tests-ui/**/*.ts"]
 }

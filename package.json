@@ -8,6 +8,7 @@
   "workspaces": ["packages/*", "examples/*"],
   "scripts": {
     "test": "bun test",
+    "test:ui": "cd packages/terminal-kit && bun run test:ui",
     "typecheck": "bun run --filter '*' typecheck",
     "build": "bun run --filter '*' build",
     "example:server": "bun packages/rt-subscriptions/examples/ticker-server.ts",
