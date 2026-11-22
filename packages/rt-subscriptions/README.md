@@ -19,13 +19,16 @@ runtime with Web `Request`/`Response` and `ReadableStream`.
 
 ## Install
 
+Not on npm yet; the package name and scope will be finalized before the first
+publish.
+
 ```bash
-bun add @rtkit/subscriptions
+git clone https://github.com/jefo/realtime-kit
+cd realtime-kit
+bun install
 ```
 
-> The package lives in the [Realtime Kit](https://github.com/jefo/realtime-kit)
-> monorepo. If it is not on npm yet, link the workspace package with
-> `bun link` from `packages/rt-subscriptions`.
+For a local consumer, run `bun link` from `packages/rt-subscriptions`.
 
 ## Quick start
 
@@ -150,6 +153,10 @@ gateway.registerTopic("orderbook", {
 - If `onFirstSubscriber` throws, the session is rolled back and the request
   fails with `TOPIC_HOOK_FAILED` (HTTP 502).
 - Hooks may be async. They are awaited before the session is returned.
+- Create/close operations are serialized per key, so concurrent subscribers
+  cannot start or stop the same upstream twice.
+- Hooks must not call back into the gateway (`createSession`/`closeSession`) for
+  the same key; that would deadlock.
 
 Set `requireRegisteredTopics: true` to reject subscriptions for topics without
 hooks.
@@ -187,8 +194,9 @@ publish right after `POST /subscribe` is not lost.
 | `idFactory` | UUID | Custom session IDs |
 | `onError` | `console.error` | Hook/transport error sink |
 
-Handler options: `basePath`, `cors`, `heartbeatMs` (default 15000),
-`retryMs` (default 3000), `onError`.
+Handler options: `basePath`, `cors` (disabled by default; `true` means `*`),
+`heartbeatMs` (default 15000), `retryMs` (default 3000), `maxBodyBytes`
+(default 65536), `onError`.
 
 ## Delivery semantics
 
@@ -213,7 +221,7 @@ on the roadmap, not in 0.1.
 ## Tests
 
 ```bash
-bun test        # 43 tests: canonical keys, fan-out, lifecycle, backpressure, HTTP, client
+bun test        # 47 tests: canonical keys, fan-out, lifecycle, backpressure, HTTP, client
 bun run typecheck
 bun run build   # ESM + .d.ts
 ```

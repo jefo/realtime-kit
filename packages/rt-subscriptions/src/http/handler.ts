@@ -7,24 +7,27 @@ export interface HandlerOptions {
   /** Prefix for all routes, e.g. `/rt`. Default: none. */
   basePath?: string;
   /**
-   * CORS origin. `true` means `*`, a string is used as-is, `false` disables
-   * CORS headers. Default: `*`.
+   * CORS origin. `true` means `*`, a string is used as-is, `false` or omitted
+   * disables CORS headers. Default: disabled.
    */
   cors?: boolean | string;
   heartbeatMs?: number;
   retryMs?: number;
+  /** Maximum request body size in bytes. Default: 65536. */
+  maxBodyBytes?: number;
   onError?: (error: unknown, context: string) => void;
 }
 
 const STATUS_BY_CODE: Record<string, number> = {
   UNKNOWN_SESSION: 404,
   TOO_MANY_SUBSCRIPTIONS: 422,
+  PAYLOAD_TOO_LARGE: 413,
   TOPIC_HOOK_FAILED: 502,
 };
 
 function corsHeaders(origin: boolean | string | undefined): Record<string, string> {
-  if (origin === false) return {};
-  const value = origin === undefined || origin === true ? "*" : origin;
+  if (origin === false || origin === undefined) return {};
+  const value = origin === true ? "*" : origin;
   return {
     "access-control-allow-origin": value,
     "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
@@ -65,6 +68,7 @@ export function createSubscriptionsHandler(
 ): (request: Request) => Promise<Response> {
   const base = normalizeBase(options.basePath);
   const headers = corsHeaders(options.cors);
+  const maxBodyBytes = Math.max(1, options.maxBodyBytes ?? 64 * 1024);
   const logError =
     options.onError ??
     ((error, context) => {
@@ -86,7 +90,7 @@ export function createSubscriptionsHandler(
 
     try {
       if (request.method === "POST" && path === "/subscribe") {
-        const body = await readJson(request);
+        const body = await readJson(request, maxBodyBytes);
         const raw = Array.isArray(body)
           ? body
           : (body as { subscriptions?: unknown } | null)?.subscriptions;
@@ -149,9 +153,43 @@ export function createSubscriptionsHandler(
   };
 }
 
-async function readJson(request: Request): Promise<unknown> {
+async function readJson(request: Request, maxBytes: number): Promise<unknown> {
+  const declared = Number(request.headers.get("content-length") ?? "0");
+  if (Number.isFinite(declared) && declared > maxBytes) {
+    throw new GatewayError("PAYLOAD_TOO_LARGE", `Body exceeds ${maxBytes} bytes.`);
+  }
+
+  const body = request.body;
+  if (!body) throw new GatewayError("INVALID_BODY", "Body must be valid JSON.");
+
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let text = "";
+  let size = 0;
+
   try {
-    return await request.json();
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!value) continue;
+      size += value.byteLength;
+      if (size > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new GatewayError("PAYLOAD_TOO_LARGE", `Body exceeds ${maxBytes} bytes.`);
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    text += decoder.decode();
+  } finally {
+    try {
+      reader.releaseLock();
+    } catch {
+      // Already released or cancelled.
+    }
+  }
+
+  try {
+    return JSON.parse(text);
   } catch {
     throw new GatewayError("INVALID_BODY", "Body must be valid JSON.");
   }

@@ -154,6 +154,53 @@ describe("lifecycle hooks", () => {
     expect(gateway.stats().subscriptions).toBe(0);
     expect(last).toBe(0);
   });
+
+  test("serializes concurrent creates and retries a failed first hook", async () => {
+    const gateway = make();
+    let calls = 0;
+    gateway.registerTopic("ticker", {
+      onFirstSubscriber: async () => {
+        calls += 1;
+        if (calls === 1) throw new Error("upstream down");
+      },
+    });
+
+    const first = gateway.createSession([{ topic: "ticker" }]);
+    const second = gateway.createSession([{ topic: "ticker" }]);
+
+    await expect(first).rejects.toMatchObject({ code: "TOPIC_HOOK_FAILED" });
+    const session = await second;
+
+    expect(calls).toBe(2);
+    expect(gateway.stats().sessions).toBe(1);
+    await gateway.closeSession(session.id);
+  });
+
+  test("fires onFirstSubscriber once for concurrent creates", async () => {
+    const gateway = make();
+    let calls = 0;
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    gateway.registerTopic("ticker", {
+      onFirstSubscriber: async () => {
+        calls += 1;
+        await gate;
+      },
+    });
+
+    const first = gateway.createSession([{ topic: "ticker" }]);
+    const second = gateway.createSession([{ topic: "ticker" }]);
+    release();
+
+    const [a, b] = await Promise.all([first, second]);
+    expect(calls).toBe(1);
+    expect(gateway.stats().sessions).toBe(2);
+
+    await gateway.closeSession(a.id);
+    await gateway.closeSession(b.id);
+  });
 });
 
 describe("backpressure", () => {

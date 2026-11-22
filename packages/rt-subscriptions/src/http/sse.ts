@@ -28,8 +28,8 @@ export function formatSseEvent(envelope: EventEnvelope): string {
  */
 export function createSseResponse(stream: SessionStream, options: SseOptions = {}): Response {
   const encoder = new TextEncoder();
-  const heartbeatMs = options.heartbeatMs ?? 15_000;
-  const retryMs = options.retryMs ?? 3_000;
+  const heartbeatMs = Math.max(1, options.heartbeatMs ?? 15_000);
+  const retryMs = Math.max(0, options.retryMs ?? 3_000);
 
   let pending: Promise<IteratorResult<EventEnvelope>> | null = null;
   let finished = false;

@@ -1,5 +1,6 @@
 import { normalizeSubscription, subscriptionKey } from "./canonical";
 import { GatewayError } from "./errors";
+import { AsyncKeyedMutex } from "./mutex";
 import { BoundedQueue } from "./queue";
 import type {
   EventEnvelope,
@@ -44,6 +45,7 @@ export class SubscriptionGateway {
   private readonly sessions = new Map<string, SessionState>();
   private readonly subscribers = new Map<string, Set<string>>();
   private readonly topics = new Map<string, TopicHooks>();
+  private readonly lifecycle = new AsyncKeyedMutex();
 
   private readonly ttlMs: number;
   private readonly maxSubscriptions: number;
@@ -124,6 +126,15 @@ export class SubscriptionGateway {
       seen.add(sub.key);
       subscriptions.push(sub);
     }
+
+    return this.lifecycle.runMany(
+      subscriptions.map((subscription) => subscription.key),
+      () => this.createSessionLocked(subscriptions),
+    );
+  }
+
+  private async createSessionLocked(subscriptions: ResolvedSubscription[]): Promise<SessionInfo> {
+    if (this.stopped) throw new Error("SubscriptionGateway is stopped.");
 
     const id = this.idFactory();
     const keys = new Set(subscriptions.map((sub) => sub.key));
@@ -262,6 +273,19 @@ export class SubscriptionGateway {
   }
 
   async closeSession(sessionId: string, reason: SessionCloseReason = "client"): Promise<boolean> {
+    const initial = this.sessions.get(sessionId);
+    if (!initial) return false;
+
+    return this.lifecycle.runMany(
+      initial.subscriptions.map((subscription) => subscription.key),
+      () => this.closeSessionLocked(sessionId, reason),
+    );
+  }
+
+  private async closeSessionLocked(
+    sessionId: string,
+    reason: SessionCloseReason,
+  ): Promise<boolean> {
     const state = this.sessions.get(sessionId);
     if (!state) return false;
 

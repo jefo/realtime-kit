@@ -95,6 +95,29 @@ describe("POST /subscribe", () => {
     });
     expect(response.status).toBe(400);
   });
+
+  test("rejects a body over maxBodyBytes", async () => {
+    const local = new SubscriptionGateway({ sessionTtlMs: 0, onError: () => {} });
+    const temp = Bun.serve({
+      port: 0,
+      fetch: createSubscriptionsHandler(local, { maxBodyBytes: 32 }),
+    });
+
+    const response = await fetch(`http://127.0.0.1:${temp.port}/subscribe`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        subscriptions: [{ topic: "ticker", params: { padding: "x".repeat(100) } }],
+      }),
+    });
+
+    expect(response.status).toBe(413);
+    const body = (await response.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("PAYLOAD_TOO_LARGE");
+
+    await temp.stop(true);
+    await local.stop();
+  });
 });
 
 describe("GET /events/:id", () => {
@@ -168,5 +191,17 @@ describe("health and CORS", () => {
     const response = await fetch(`${base}/subscribe`, { method: "OPTIONS" });
     expect(response.status).toBe(204);
     expect(response.headers.get("access-control-allow-origin")).toBe("*");
+  });
+
+  test("does not enable CORS by default", async () => {
+    const local = new SubscriptionGateway({ sessionTtlMs: 0, onError: () => {} });
+    const temp = Bun.serve({
+      port: 0,
+      fetch: createSubscriptionsHandler(local),
+    });
+    const response = await fetch(`http://127.0.0.1:${temp.port}/health`);
+    expect(response.headers.get("access-control-allow-origin")).toBeNull();
+    await temp.stop(true);
+    await local.stop();
   });
 });
